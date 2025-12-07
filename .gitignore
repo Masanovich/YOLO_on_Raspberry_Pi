@@ -1,10 +1,54 @@
 # Python-generated files
 __pycache__/
-*.py[oc]
+*.py[co]
+*.py[cod]
+__pycache__/
+
+# Distribution / packaging
 build/
 dist/
 wheels/
-*.egg-info
+*.egg-info/
+pip-wheel-metadata/
 
 # Virtual environments
-.venv
+.venv/
+venv/
+ENV/
+env/
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+# Keep notebooks themselves tracked, but ignore checkpoints and output caches
+
+# Python caches, testing, coverage
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+.coverage.*
+
+# Ruff cache
+.ruff_cache/
+
+# YOLO / Ultralyics outputs and weights (model training artifacts)
+runs/
+weights/
+logs/
+
+# Common files
+.DS_Store
+*.log
+*.sqlite3
+*.db
+
+# Compiled extensions
+*.so
+
+# Byte-compiled / distribution
+*.egg
+
