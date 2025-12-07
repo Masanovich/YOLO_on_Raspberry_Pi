@@ -1,0 +1,30 @@
+{
+  // Enable format on save globally (Ctrl+S will format files)
+  "editor.formatOnSave": true,
+
+  // Prefer Ruff as the formatter for Python files
+  "editor.defaultFormatter": "charliermarsh.ruff",
+
+  // Python-specific settings
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit"
+    }
+  },
+
+  // Ensure notebook documents (Jupyter) do NOT run Ruff fixes on save.
+  // Notebook cells still use the Python language for editing, but this prevents automatic code actions
+  // for the notebook host type. If you use a different notebook extension, change "jupyter" accordingly.
+  "[jupyter]": {
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {}
+  },
+
+  // Pass Ruff CLI args used by the extension (line length comes from .ruff.toml but we keep this in sync)
+  "ruff.args": ["--line-length=88"],
+
+  // Optional: prevent the Microsoft Python extension from trying to format (we use Ruff instead)
+  "python.formatting.provider": "none"
+}
