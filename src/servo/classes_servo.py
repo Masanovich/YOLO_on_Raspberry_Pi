@@ -1,3 +1,21 @@
+# Imports
+from typing import Any, Optional, List
+import Adafruit_PCA9685
+import time
+import math
+
+from src.servo.helpers_servo import angle_to_counts
+
+# Set the I2C bus number and PCA9685 address
+# Run `i2cdetect -y -r <bus>` to find the hex address (e.g., 0x40)
+I2C_BUS: int = 1
+PCA9685_I2C_ADDRESS: int = 0x40
+
+# Servo helpers and demo
+# Helpers for angle ↔ PWM counts (assumes 50 Hz)
+FREQ: int = 50
+PERIOD_MS: float = 1000.0 / FREQ
+
 class ServoController:
     """Controller for a single servo connected to PCA9685.
 
@@ -13,6 +31,17 @@ class ServoController:
         # Move servo to the initial center position
         self.drv_pwm.set_pwm(self.pos_channel, 0, angle_to_counts(self.pos_current_angle))
 
+    def initialize_driver(self) -> None:
+        """Initialize the PCA9685 driver for servo control."""
+        
+        self.drv_pwm: Any
+        try:
+            self.drv_pwm = Adafruit_PCA9685.PCA9685(address=PCA9685_I2C_ADDRESS, busnum=I2C_BUS)
+            self.drv_pwm.set_pwm_freq(FREQ)  # 50 Hz is typical for servos
+            print("PCA9685 initialized successfully")
+        except Exception as exc:
+            raise RuntimeError("Failed to initialize PCA9685") from exc
+        
     def move_to_center(self) -> None:
         """Move servo to its center position and update state."""
         self.drv_pwm.set_pwm(self.pos_channel, 0, angle_to_counts(self.pos_center))
