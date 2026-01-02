@@ -1,7 +1,8 @@
 # Imports
-from typing import Any
-import Adafruit_PCA9685
 import time
+from typing import Any
+
+import Adafruit_PCA9685
 
 from src.servo.helpers_servo import angle_to_counts
 
@@ -33,9 +34,7 @@ class ServoController:
 
         self.initialize_driver()
         # Move servo to the initial center position
-        self._drv_pwm.set_pwm(
-            self._pos_channel, 0, angle_to_counts(self._angle_curr)
-        )
+        self._drv_pwm.set_pwm(self._pos_channel, 0, angle_to_counts(self._angle_curr))
 
     def initialize_driver(self) -> None:
         """Initialize the PCA9685 driver for servo control."""
@@ -50,9 +49,10 @@ class ServoController:
         except Exception as exc:
             raise RuntimeError("Failed to initialize PCA9685") from exc
 
-    def move_to_center(self) -> None:
+    def move_to_center(self, **kwargs) -> None:
         """Move servo to its center position and update state."""
-        self._drv_pwm.set_pwm(self._pos_channel, 0, angle_to_counts(self._pos_center))
+        # self._drv_pwm.set_pwm(self._pos_channel, 0, angle_to_counts(self._pos_center))
+        self.move_to(self._pos_center, **kwargs)
         self._angle_curr = self._pos_center
 
     def move_to(
