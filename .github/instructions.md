@@ -7,11 +7,8 @@ Short, explicit rules to guide GitHub Copilot suggestions so generated code matc
 
 ## Quick, must-follow rules 🔧
 - **Always write type hints whenever defining a variable.** Use PEP 526 style annotations for variables and annotate function signatures and return types.
-
 - **Avoid ambiguous single-letter names** like `a`, `i`, `j` for meaningful variables. Use descriptive names (`idx_frame`, `count_items`) and reserve single letters only for tiny, local loop counters when truly appropriate.
-
 - **Prefer `type_first` naming with words ordered by importance.** Put a short token implying the variable type first (e.g., `dir_`, `arr_`, `list_`, `html_`, `df_`), then the main concept, then qualifiers. For time/pulse units prefer explicit `ms_` for millisecond values (e.g., `servo_min_ms`, `servo_max_ms`) rather than ambiguous `min_ms`/`max_ms`.
-
 - **Use snake_case** for variables, functions, and methods; PascalCase for classes and types.
 - **Boolean names** should start with `is_`, `has_`, `should_` (e.g., `is_ready: bool`).
 - **Constants**: use UPPER_SNAKE_CASE and annotate types (e.g., `MAX_EPOCHS: int = 100`).

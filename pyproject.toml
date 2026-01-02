@@ -84,3 +84,19 @@ dependencies = [
 	"urllib3==2.6.0",
 	"wcwidth==0.2.14"
 ]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 88
+select = ["E", "W", "F", "I"]
+ignore = ["__init__.py"]
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
