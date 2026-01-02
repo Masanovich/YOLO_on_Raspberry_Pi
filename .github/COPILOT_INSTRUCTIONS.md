@@ -1,104 +1,66 @@
-````markdown
-# GitHub Copilot / Assistant Instructions for YOLO_camera
+# GitHub Copilot Instructions for This Repository ✅
 
-Purpose
--------
-This document provides concise, project-specific instructions for GitHub Copilot (or any assistant) when generating or modifying code in this repository. Follow these guidelines to keep code consistent, safe, and easy to review.
-
-Project overview
-----------------
-- Language: Python 3.10+ (use the project's virtual environment `.venv` when running tools).
-- Main concerns: real-time camera capture, YOLO model inference (ultralytics), Jupyter notebooks for experimentation.
-
-Formatting & style
-------------------
-- Follow PEP 8 and the project's Ruff configuration. Default line length: 88 characters.
-- Use the `charliermarsh.ruff` formatter in VS Code when generating `.py` files. Prefer `ruff --fix` only for `.py` files; do NOT auto-fix `.ipynb` files.
-- Use `isort` with `profile = "black"` for import ordering when creating or updating `.py` files.
-- When generating code examples for notebooks, be succinct and idiomatic; prefer explicit imports and small helper functions.
-
-Variable naming and type hints
------------------------------
-- Use variable names that indicate the variable's type at a glance. Preferred patterns in this project:
-  - `path_file` instead of `file_path`
-  - `dir_output` instead of `output_dir`
-  - `arr_w_matrix` instead of `matrix_w`
-  These conventions help readers quickly identify the kind of value (path, directory, array/matrix, etc.).
-- Add appropriate type hints to variables, function parameters, and return types wherever possible. Prefer explicit typing for public functions and library-like helpers. Examples:
-
-```python
-path_file: Path = Path("../images/squirrel.jpg")
-dir_output: Path = path_file.parent / "output"
-arr_w_matrix: np.ndarray
-
-def load_image(path_file: Path) -> np.ndarray:
-    ...
-```
-
- - When type hinting notebooks, keep annotations clear but concise; it's acceptable to use `# type:` comments for inline clarity when needed.
-
-Notebooks (.ipynb)
--------------------
-- Do NOT remove imports or perform other destructive fixes for `.ipynb` files unless explicitly instructed by the user. Notebooks are used interactively and may require different behavior than `.py` modules.
-- Avoid large automatic refactors in notebooks. If formatting is needed, prefer using the repository script `scripts/strip_notebook_blanks.py` to remove leading blank lines, or suggest pairing notebooks with `jupytext` for `.py`-backed formatting.
-- Prefer providing small, self-contained cells rather than long scripts pasted into a single cell.
-
-Virtual environments & dependencies
-----------------------------------
-- Use `.venv` for local testing. Do not modify `.venv` files in the repo.
-- When suggesting new dependencies, add them to `requirements.txt` (or propose `pyproject.toml`) and explain why.
-
-Hardware and side effects
--------------------------
-- Code that opens camera devices (e.g., `cv2.VideoCapture`) must always ensure the device is released on error or interruption. Use context managers or `try/finally` blocks.
-- Avoid long-running blocking loops in notebook cells. Suggest non-blocking alternatives or helper scripts that run outside the notebook when appropriate.
-
-Model files, data, and large artifacts
-------------------------------------
-- Do not add large model weights or dataset files to the repository. Use `weights/`, `runs/`, or `output/` directories which are listed in `.gitignore`.
-- When demonstrating model usage, reference placeholder paths (e.g., `yolov8s.pt`) and document where to place real files.
-
-Security and secrets
---------------------
-- Never add API keys, credentials, or secrets into source files or notebooks. If credentials are required, instruct the user to store them in environment variables or a `.env` file (do NOT generate `.env` with secrets checked in).
-
-Tests and CI
------------
-- When adding or changing logic, include unit tests where reasonable. Prefer small, fast tests that do not require GPU hardware.
-- For suggested CI changes — provide a minimal, clearly-explained YAML snippet and explain required secrets and runner constraints.
-
-Prompts and code generation guidance
------------------------------------
-When asked to generate code for this repository, follow this pattern in your output:
-
-1. Short summary (1-2 lines) of what you'll add or change.
-2. A small plan of steps when the change is non-trivial.
-3. The code changes themselves, minimal and targeted — prefer adding new files rather than editing many unrelated files.
-4. A brief verification guide (commands to run, expected output).
-
-Examples
---------
-- Good prompt for generating a helper:
-  "Add a small `utils/camera.py` helper with a context manager that opens and safely releases `cv2.VideoCapture`, and update the camera notebook to import and use it. Include a short test snippet." 
-
-- Bad prompt (avoid):
-  "Refactor the whole repo to use async IO everywhere." (too broad; ask for a focused change instead)
-
-Commit messages and PRs
-----------------------
-- Write concise commit messages in imperative mood (e.g., "Add camera context manager").
-- For PR descriptions, include a short summary, rationale, and testing steps.
-
-When in doubt
--------------
-- Ask the user for clarification rather than making large automated changes. If a requested change might break experiments or notebooks, produce an opt-in patch and explain the risk.
-
-Contact / metadata
-------------------
-- Repo root path: `/home/masayuki/Documents/Projects/Python/YOLO_camera`
-- Primary developer: masayuki (local machine). For any risky or destructive changes, request explicit approval.
+## Purpose
+Short, explicit rules to guide GitHub Copilot suggestions so generated code matches project conventions and is easy to read, maintain, and review.
 
 ---
-This file is intended as human-readable guidance for Copilot or assistants working in this repository. It is not enforced by tooling; please follow it as best practice.
 
-````
+## Quick, must-follow rules 🔧
+- **Always write type hints whenever defining a variable.** Use PEP 526 style annotations for variables and annotate function signatures and return types.
+- **Avoid ambiguous single-letter names** like `a`, `i`, `j` for meaningful variables. Use descriptive names (`idx_frame`, `count_items`) and reserve single letters only for tiny, local loop counters when truly appropriate.
+- **Prefer `type_first` naming with words ordered by importance.** Put a short token implying the variable type first (e.g., `dir_`, `arr_`, `list_`, `html_`, `df_`), then the main concept, then qualifiers.
+- **Use snake_case** for variables, functions, and methods; PascalCase for classes and types.
+- **Boolean names** should start with `is_`, `has_`, `should_` (e.g., `is_ready: bool`).
+- **Constants**: use UPPER_SNAKE_CASE and annotate types (e.g., `MAX_EPOCHS: int = 100`).
+
+- **Write type hints whenever defining a variable.** Use PEP 526 style annotations for variables, e.g. `x: int = 0`, `arr_w_mat: np.ndarray = np.zeros((3, 3))`.
+- **Never use ambiguous single-letter names** like `a`, `i`, `j` for meaningful variables. Reserve single letters only for tight, clearly-scoped loop indices when unavoidable, and prefer descriptive names even for loops (e.g., `idx_frame`).
+- **Prefer `type_first` naming with words ordered by importance.** Put a short token that implies the variable type (e.g., `dir_`, `arr_`, `list_`, `html_`, `df_`) first, then the main concept and then qualifiers.
+  - Examples:
+    - Prefer `dir_curr` over `curr_dir` for the current directory
+    - Prefer `arr_w_mat` over `w_mat` for a W matrix (array)
+    - Prefer `list_name_title` over `title_names` for a list of title names
+    - Prefer `html_fig_flatness` over `fig_flatness_html` for an HTML string for a flatness figure
+- **Use underscores** to separate tokens (snake_case). Keep names concise but descriptive.
+- **Type-aware prefixes**: choose prefix tokens that give quick type hints (e.g., `str_`, `int_`, `list_`, `dict_`, `arr_`, `np_`, `df_`, `html_`). Use standard domain-shorteners (e.g., `img_` for image) where appropriate.
+
+---
+
+## Why this style? 💡
+Putting a short type token first and ordering words by importance improves readability (especially in parameter lists and class constructors) and makes it easier to scan types and intent when reading or auto-completing code.
+
+---
+
+## Examples 🔍
+
+Before:
+```py
+cur_dir = os.getcwd()
+w_mat = np.zeros((3,3))
+title_names = ["A", "B"]
+fig_flatness_html = "<div>...</div>"
+```
+
+After (preferred):
+```py
+from typing import List
+import numpy as np
+
+# variable annotations included
+dir_curr: str = os.getcwd()
+arr_w_mat: np.ndarray = np.zeros((3, 3))
+list_name_title: List[str] = ["A", "B"]
+html_fig_flatness: str = "<div>...</div>"
+```
+
+---
+
+## Small, additional suggestions
+- For function signatures and class __init__, prefer explicit type annotations for parameters and return types.
+- If a complex type is used (e.g., numpy arrays, pandas DataFrame), include the type (e.g., `np.ndarray`, `pd.DataFrame`) in the annotation and, when helpful, add a short inline comment describing shape or units.
+- Keep lines short and prioritize readability over extreme brevity.
+
+
+---
+
+If you (Copilot) propose code that violates these rules, prefer the style in this file instead and add or correct type hints and names automatically.
