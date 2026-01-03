@@ -47,15 +47,15 @@ class ServoController:
     def __init__(
         self,
         channel: int = 0,
-        angle_center: float = 90.0,
+        center_angle: float = 90.0,
         freq: float = 50.0,
     ) -> None:
         self._channel: int = channel
-        self._angle_center: float = angle_center
-        self._angle_curr: float = angle_center
+        self._center_angle: float = center_angle
+        self._current_angle: float = center_angle
         self._freq: float = freq
 
-        self._dt_step = 1 / self._freq
+        self._step_dt = 1 / self._freq
 
         self.initialize_driver()
         # # Move servo to the initial center position
@@ -80,29 +80,50 @@ class ServoController:
     def move_to_center(self, **kwargs) -> None:
         """Move servo to its center position and update state."""
         # self._drv_pwm.set_pwm(self._pos_channel, 0, angle_to_counts(self._pos_center))
-        self.move_to(self._angle_center, **kwargs)
-        self._angle_curr = self._angle_center
+        self.move_to(self._center_angle, **kwargs)
+        self._current_angle = self._center_angle
 
     def move_to(
         self,
-        angle_target: float,
+        target_angle: float,
         speed_deg_per_sec: float = 60.0,
     ) -> None:
         """
         Move servo to ``target_angle`` at ``speed_deg_per_sec`` using steps of ``dt_step`` seconds.
         """
-        angle_start: float = self._angle_curr
-        delta: float = float(angle_target - angle_start)
+        start_angle: float = self._current_angle
+        delta: float = float(target_angle - start_angle)
         duration: float = (
             abs(delta) / float(speed_deg_per_sec) if speed_deg_per_sec > 0 else 0.0
         )
 
-        steps: int = max(1, int(duration / self._dt_step))
+        steps: int = max(1, int(duration / self._step_dt))
         dt: float = duration / steps
 
         for i_step in range(1, steps + 1):
-            angle_deg: float = angle_start + delta * (i_step / steps)
-            self._drv_pwm.set_pwm(self._channel, 0, angle_to_counts(angle_deg))
+            step_angle: float = start_angle + delta * (i_step / steps)
+
+            # Calculate the change in counts needed
+            delta_counts: int = angle_to_counts(step_angle) - angle_to_counts(
+                self._current_angle
+            )
+            self.step(delta_counts)
+
             time.sleep(dt)
 
-        self._angle_curr = angle_target
+        self._current_angle = target_angle
+
+    def step(self, delta_counts: int) -> None:
+        """Step the servo by a given number of PCA9685 counts."""
+        current_counts: int = angle_to_counts(self._current_angle)
+        target_counts: int = current_counts + delta_counts
+
+        self._drv_pwm.set_pwm(self._channel, 0, target_counts)
+
+    def step_by_angle(self, delta_angle: float) -> None:
+        """Step the servo by a given angle in degrees."""
+        target_angle: float = self._current_angle + delta_angle
+        target_counts: int = angle_to_counts(target_angle)
+
+        self._drv_pwm.set_pwm(self._channel, 0, target_counts)
+        self._current_angle = target_angle
