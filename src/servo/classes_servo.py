@@ -60,7 +60,7 @@ class ServoController:
         self.initialize_driver()
 
         # Move servo to the initial center position
-        self.move_to_center()
+        self.move_to_center(speed_deg_per_sec=30.0)
 
     def initialize_driver(self) -> None:
         """Initialize the PCA9685 driver for servo control."""
@@ -87,7 +87,7 @@ class ServoController:
     def move_to(
         self,
         target_angle: float,
-        speed_deg_per_sec: float = 60.0,
+        speed_deg_per_sec: float = 30.0,
     ) -> None:
         """
         Move servo to ``target_angle`` at ``speed_deg_per_sec`` using steps of ``dt_step`` seconds.
