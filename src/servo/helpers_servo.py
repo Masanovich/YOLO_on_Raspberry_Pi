@@ -39,7 +39,7 @@ def angle_to_counts(
         * pulse_ms / 20.0 : This tells us what percentage of the total cycle the pulse takes up.
           If your pulse is 1.5ms, then $1.5 / 20.0 = 0.075$ (or 7.5% of the cycle).
         * SERVO_COUNTS_MAX: Finally, we multiply that percentage by 4095 to see how many "slices" that equals.
-          0.075 \times 4095 \approx 307 counts.
+          0.075 * 4095 ~ 307 counts.
     """
     angle_deg: float = max(min_angle, min(max_angle, float(angle)))
 
