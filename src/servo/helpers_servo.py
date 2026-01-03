@@ -1,19 +1,15 @@
 # Typical servo pulse range (adjust if your servo differs)
-SERVO_MIN_MS: float = 1.0  # ms for min angle
-SERVO_MAX_MS: float = 2.0  # ms for max angle
-ANGLE_MIN: float = 0.0
-ANGLE_MAX: float = 180.0
 SERVO_COUNTS_MAX: int = 4095  # 12-bit
 
 
 # Convert angle in degrees to PCA9685 counts (0-4095)
 def angle_to_counts(
     angle: float,
-    angle_min: float = ANGLE_MIN,
-    angle_max: float = ANGLE_MAX,
-    servo_min_ms: float = SERVO_MIN_MS,
-    servo_max_ms: float = SERVO_MAX_MS,
-    freq: int = 50,
+    angle_min: float = -180.0,
+    angle_max: float = 180.0,
+    servo_min_ms: float = 1.0,
+    servo_max_ms: float = 2.0,
+    freq: float = 50.0,
 ) -> int:
     """Convert an angle in degrees to 12-bit PCA9685 counts.
 
@@ -24,7 +20,7 @@ def angle_to_counts(
 
     pulse_ms: float = servo_min_ms + (angle_deg - angle_min) / (
         angle_max - angle_min
-    ) * (servo_max_ms - servo_min_ms)\
+    ) * (servo_max_ms - servo_min_ms)
 
     counts: int = int(pulse_ms / (1000.0 / freq) * SERVO_COUNTS_MAX)
     return counts

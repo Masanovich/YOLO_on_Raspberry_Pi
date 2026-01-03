@@ -96,7 +96,7 @@ line-length = 88
 # Rules to enable
 select = ["E", "W", "F", "I"]
 # Rules to ignore globally (leave empty if none)
-ignore = ["W293"]
+ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 # If you wanted to ignore specific errors in __init__.py, list them here.
