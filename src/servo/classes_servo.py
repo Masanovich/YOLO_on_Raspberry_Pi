@@ -58,8 +58,9 @@ class ServoController:
         self._step_dt = 1 / self._freq
 
         self.initialize_driver()
-        # # Move servo to the initial center position
-        # self.move_to_center()
+
+        # Move servo to the initial center position
+        self.move_to_center()
 
     def initialize_driver(self) -> None:
         """Initialize the PCA9685 driver for servo control."""
