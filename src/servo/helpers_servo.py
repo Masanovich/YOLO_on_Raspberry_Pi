@@ -37,7 +37,7 @@ def angle_to_counts(
     Let's look at the final line of your code:counts = int(pulse_ms / (1000.0 / freq) * SERVO_COUNTS_MAX)
         * 1000.0 / freq: This calculates the Period (total time of one cycle) in milliseconds. At 50Hz, this is $1000 / 50 = 20ms
         * pulse_ms / 20.0 : This tells us what percentage of the total cycle the pulse takes up.
-          If your pulse is 1.5ms, then $1.5 / 20.0 = 0.075$ (or 7.5% of the cycle).
+          If your pulse is 1.5ms, then 1.5 / 20.0 = 0.075 (or 7.5% of the cycle).
         * SERVO_COUNTS_MAX: Finally, we multiply that percentage by 4095 to see how many "slices" that equals.
           0.075 * 4095 ~ 307 counts.
     """

@@ -101,29 +101,16 @@ class ServoController:
         dt: float = duration / steps
 
         for i_step in range(1, steps + 1):
-            step_angle: float = start_angle + delta * (i_step / steps)
+            middle_target_angle: float = start_angle + delta * (i_step / steps)
 
-            # Calculate the change in counts needed
-            delta_counts: int = angle_to_counts(step_angle) - angle_to_counts(
-                self._current_angle
+            self._drv_pwm.set_pwm(
+                self._channel, 0, angle_to_counts(middle_target_angle)
             )
-            self.step(delta_counts)
+            self._current_angle = middle_target_angle
 
             time.sleep(dt)
 
-        self._current_angle = target_angle
-
-    def step(self, delta_counts: int) -> None:
-        """Step the servo by a given number of PCA9685 counts."""
-        current_counts: int = angle_to_counts(self._current_angle)
-        target_counts: int = current_counts + delta_counts
-
-        self._drv_pwm.set_pwm(self._channel, 0, target_counts)
-
-    def step_by_angle(self, delta_angle: float) -> None:
-        """Step the servo by a given angle in degrees."""
+    def move_by_angle(self, delta_angle: float, **kwargs) -> None:
+        """Move servo by ``delta_angle`` degrees from its current position."""
         target_angle: float = self._current_angle + delta_angle
-        target_counts: int = angle_to_counts(target_angle)
-
-        self._drv_pwm.set_pwm(self._channel, 0, target_counts)
-        self._current_angle = target_angle
+        self.move_to(target_angle, **kwargs)
