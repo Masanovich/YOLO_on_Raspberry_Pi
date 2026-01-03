@@ -91,8 +91,17 @@ target-version = ["py312"]
 
 [tool.ruff]
 line-length = 88
+
+[tool.ruff.lint]
+# Rules to enable
 select = ["E", "W", "F", "I"]
-ignore = ["__init__.py"]
+# Rules to ignore globally (leave empty if none)
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+# If you wanted to ignore specific errors in __init__.py, list them here.
+# For example, to ignore unused imports (F401) in all __init__.py files:
+"__init__.py" = ["F401"]
 
 [tool.isort]
 profile = "black"
