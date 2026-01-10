@@ -40,10 +40,10 @@ class CameraManager:
 class YOLOCameraManager:
     """Extends CameraManager to include YOLO object detection capabilities."""
 
-    def __init__(self, model_path: str = "yolo12n_ncnn_model", imgz: int = 320) -> None:
+    def __init__(self, model_path: str = "yolo12n_ncnn_model", imgsz: int = 320) -> None:
         self._yolo_model: YOLO = YOLO(model_path)
         self._camera_manager: CameraManager = CameraManager()
-        self._imgz = imgz
+        self._imgsz = imgsz
 
     def get_capture_and_detect_results(self):
         """Captures an image and performs object detection.
@@ -54,7 +54,7 @@ class YOLOCameraManager:
         image = self._camera_manager.capture_image()
         image_bgr = convert_rgb_to_bgr(image)
 
-        results = self._yolo_model.predict(image_bgr, imgz=self._imgz)
+        results = self._yolo_model.predict(image_bgr, imgsz=self._imgsz)
 
         return results
 
