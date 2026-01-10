@@ -17,7 +17,9 @@ class CameraManager:
     def __init__(self, model_path: str = "yolo12n_ncnn_model") -> None:
         self._picam2: Picamera2 = Picamera2()
 
-        self.configure_camera()
+        # self.configure_camera()
+
+        self._picam2.start()
 
     def configure_camera(self) -> None:
         """Configures the camera with desired settings."""
@@ -26,7 +28,6 @@ class CameraManager:
                 main={"format": "XRGB8888", "size": (640, 480)}
             )
         )
-        self._picam2.start()
 
     def capture_image(self) -> Any:
         """Captures an image from the camera.
@@ -54,9 +55,9 @@ class YOLOCameraManager:
             The annotated image with detection results.
         """
         image = self._camera_manager.capture_image()
-        image_bgr = convert_rgb_to_bgr(image)
+        image = convert_rgb_to_bgr(image)
 
-        results = self._yolo_model.predict(image_bgr, imgsz=self._imgsz)
+        results = self._yolo_model.predict(image, imgsz=self._imgsz)
 
         return results
 
@@ -72,9 +73,11 @@ class YOLOCameraManager:
 
         annotated_image = res.plot()
 
+        # annotated_image = convert_rgb_to_bgr(annotated_image)
+
         return annotated_image
 
-    def display_annotated_image(self) -> None:
+    def display_annotated_video(self) -> None:
         """Displays the annotated image with detection results in a Jupyter Notebook."""
 
         while True:

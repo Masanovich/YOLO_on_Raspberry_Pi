@@ -172,23 +172,13 @@ class DualServoController:
 
     def move_by_angles(
         self,
-        delta_angles: tuple[float, float],
-        speed_deg_per_sec: float = 30.0,
+        pan_angle: float,
+        tilt_angle: float,
     ) -> None:
-        """Move both servos by specified delta angles.
+        """Move both servos by specified angles from their current positions.
 
-        delta_angles should be a tuple: (delta_horizontal, delta_vertical)
+        pan_angle: angle to move horizontal servo (pan)
+        tilt_angle: angle to move vertical servo (tilt)
         """
-        try:
-            delta_angle_horizontal, delta_angle_vertical = delta_angles
-        except Exception:
-            raise TypeError(
-                "delta_angles must be a tuple (delta_horizontal, delta_vertical)"
-            )
-
-        self._servo_horizontal.move_by_angle(
-            delta_angle_horizontal, speed_deg_per_sec=speed_deg_per_sec
-        )
-        self._servo_vertical.move_by_angle(
-            delta_angle_vertical, speed_deg_per_sec=speed_deg_per_sec
-        )
+        self._servo_horizontal.move_by_angle(pan_angle)
+        self._servo_vertical.move_by_angle(tilt_angle)
