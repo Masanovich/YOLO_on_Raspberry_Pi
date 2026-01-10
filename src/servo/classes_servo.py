@@ -142,6 +142,8 @@ class DualServoController:
             freq=freq,
         )
 
+        self.move_to_center()
+
     def move_to_center(self, **kwargs) -> None:
         """Move both servos to their center positions."""
         self._servo_horizontal.move_to_center(**kwargs)

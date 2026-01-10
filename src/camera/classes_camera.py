@@ -14,10 +14,12 @@ class CameraManager:
     and object detection using a pre-trained YOLO model.
     """
 
-    def __init__(self, model_path: str = "yolo12n_ncnn_model") -> None:
+    def __init__(self, x_size: int = 640, y_size: int = 480) -> None:
         self._picam2: Picamera2 = Picamera2()
+        self._x_size: int = x_size
+        self._y_size: int = y_size
 
-        # self.configure_camera()
+        self.configure_camera()
 
         self._picam2.start()
 
@@ -25,7 +27,7 @@ class CameraManager:
         """Configures the camera with desired settings."""
         self._picam2.configure(
             self._picam2.create_preview_configuration(
-                main={"format": "XRGB8888", "size": (640, 480)}
+                main={"format": "XRGB8888", "size": (self._x_size, self._y_size)}
             )
         )
 
@@ -36,6 +38,10 @@ class CameraManager:
             The captured image in a format suitable for processing.
         """
         return self._picam2.capture_array()
+
+    def get_xy_size(self) -> tuple[int, int]:
+        """Returns the current image size as (x_size, y_size)."""
+        return self._x_size, self._y_size
 
 
 class YOLOCameraManager:
@@ -48,7 +54,7 @@ class YOLOCameraManager:
         self._camera_manager: CameraManager = CameraManager()
         self._imgsz = imgsz
 
-    def get_capture_and_detect_results(self):
+    def capture_and_get_results(self, **kwargs) -> Any:
         """Captures an image and performs object detection.
 
         Returns:
@@ -57,23 +63,23 @@ class YOLOCameraManager:
         image = self._camera_manager.capture_image()
         image = convert_rgb_to_bgr(image)
 
-        results = self._yolo_model.predict(image, imgsz=self._imgsz)
+        results = self._yolo_model.predict(image, imgsz=self._imgsz, **kwargs)
 
         return results
 
-    def get_annotated_image(self) -> Any:
+    def get_annotated_image(self, results=None) -> Any:
         """Displays the detection results on the captured image.
 
         Returns:
             The annotated image with detection results.
         """
-        results = self.get_capture_and_detect_results()
+        results = self.capture_and_get_results() if results is None else results
 
         res = results[0] if isinstance(results, (list, tuple)) else results
 
         annotated_image = res.plot()
 
-        # annotated_image = convert_rgb_to_bgr(annotated_image)
+        annotated_image = convert_rgb_to_bgr(annotated_image)
 
         return annotated_image
 
@@ -85,3 +91,7 @@ class YOLOCameraManager:
 
             clear_output(wait=True)
             display(Image(data=cv2.imencode(".jpg", annotated_image)[1].tobytes()))
+
+    def get_camera_xy_size(self) -> tuple[int, int]:
+        """Returns the current image size as (x_size, y_size)."""
+        return self._camera_manager.get_xy_size()
