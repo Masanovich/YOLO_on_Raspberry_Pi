@@ -40,7 +40,9 @@ class CameraManager:
 class YOLOCameraManager:
     """Extends CameraManager to include YOLO object detection capabilities."""
 
-    def __init__(self, model_path: str = "yolo12n_ncnn_model", imgsz: int = 320) -> None:
+    def __init__(
+        self, model_path: str = "yolo12n_ncnn_model", imgsz: int = 320
+    ) -> None:
         self._yolo_model: YOLO = YOLO(model_path)
         self._camera_manager: CameraManager = CameraManager()
         self._imgsz = imgsz
@@ -58,7 +60,7 @@ class YOLOCameraManager:
 
         return results
 
-    def display_results(self) -> Any:
+    def get_annotated_image(self) -> Any:
         """Displays the detection results on the captured image.
 
         Returns:
@@ -70,8 +72,13 @@ class YOLOCameraManager:
 
         annotated_image = res.plot()
 
-        # Display in Jupyter Notebook
-        ok, buf = cv2.imencode(".jpg", annotated_image)
-        if ok:
+        return annotated_image
+
+    def display_annotated_image(self) -> None:
+        """Displays the annotated image with detection results in a Jupyter Notebook."""
+
+        while True:
+            annotated_image = self.get_annotated_image()
+
             clear_output(wait=True)
-            display(Image(data=buf.tobytes()))
+            display(Image(data=cv2.imencode(".jpg", annotated_image)[1].tobytes()))
