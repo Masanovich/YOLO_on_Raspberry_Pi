@@ -54,13 +54,21 @@ class YOLOCameraManager:
         self._camera_manager: CameraManager = CameraManager()
         self._imgsz = imgsz
 
-    def capture_and_get_results(self, **kwargs) -> Any:
+    def capture_image(self) -> Any:
+        """Captures an image from the camera.
+
+        Returns:
+            The captured image in a format suitable for processing.
+        """
+        return self._camera_manager.capture_image()
+
+    def get_results_from_image(self, image=None, **kwargs) -> Any:
         """Captures an image and performs object detection.
 
         Returns:
             The annotated image with detection results.
         """
-        image = self._camera_manager.capture_image()
+        image = self._camera_manager.capture_image() if image is None else image
         image = convert_rgb_to_bgr(image)
 
         results = self._yolo_model.predict(image, imgsz=self._imgsz, **kwargs)
@@ -73,7 +81,7 @@ class YOLOCameraManager:
         Returns:
             The annotated image with detection results.
         """
-        results = self.capture_and_get_results() if results is None else results
+        results = self.get_results_from_image() if results is None else results
 
         res = results[0] if isinstance(results, (list, tuple)) else results
 
