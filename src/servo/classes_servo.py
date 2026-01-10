@@ -38,8 +38,8 @@ PCA9685_I2C_ADDRESS: int = 0x40
 
 
 class ServoController:
-    """Controller for a single servo connected to PCA9685.
-
+    """
+    Controller for a single servo connected to PCA9685.
     Naming conventions: type-first tokens for attributes (e.g., ``pos_channel``,
     ``pos_current_angle``) and full type hints on attributes and methods.
     """
@@ -115,3 +115,80 @@ class ServoController:
         """Move servo by ``delta_angle`` degrees from its current position."""
         target_angle: float = self._current_angle + delta_angle
         self.move_to(target_angle, **kwargs)
+
+
+class DualServoController:
+    """
+    Controller for two servos (e.g., pan and tilt) connected to PCA9685.
+    Horizontal is servo_horizontal (pan), Vertical is servo_vertical (tilt).
+    """
+
+    def __init__(
+        self,
+        channel_horizontal: int = 0,
+        channel_vertical: int = 1,
+        center_angle_horizontal: float = 90.0,
+        center_angle_vertical: float = 90.0,
+        freq: float = 50.0,
+    ) -> None:
+        self._servo_horizontal: ServoController = ServoController(
+            channel=channel_horizontal,
+            center_angle=center_angle_horizontal,
+            freq=freq,
+        )
+        self._servo_vertical: ServoController = ServoController(
+            channel=channel_vertical,
+            center_angle=center_angle_vertical,
+            freq=freq,
+        )
+
+    def move_to_center(self, **kwargs) -> None:
+        """Move both servos to their center positions."""
+        self._servo_horizontal.move_to_center(**kwargs)
+        self._servo_vertical.move_to_center(**kwargs)
+
+    def move_to(
+        self,
+        target_angles: tuple[float, float],
+        speed_deg_per_sec: float = 30.0,
+    ) -> None:
+        """Move both servos to specified target angles.
+
+        target_angles should be a tuple: (horizontal_angle, vertical_angle)
+        """
+        try:
+            target_angle_horizontal, target_angle_vertical = target_angles
+        except Exception:
+            raise TypeError(
+                "target_angles must be a tuple (horizontal_angle, vertical_angle)"
+            )
+
+        self._servo_horizontal.move_to(
+            target_angle_horizontal, speed_deg_per_sec=speed_deg_per_sec
+        )
+        self._servo_vertical.move_to(
+            target_angle_vertical, speed_deg_per_sec=speed_deg_per_sec
+        )
+
+    def move_by_angles(
+        self,
+        delta_angles: tuple[float, float],
+        speed_deg_per_sec: float = 30.0,
+    ) -> None:
+        """Move both servos by specified delta angles.
+
+        delta_angles should be a tuple: (delta_horizontal, delta_vertical)
+        """
+        try:
+            delta_angle_horizontal, delta_angle_vertical = delta_angles
+        except Exception:
+            raise TypeError(
+                "delta_angles must be a tuple (delta_horizontal, delta_vertical)"
+            )
+
+        self._servo_horizontal.move_by_angle(
+            delta_angle_horizontal, speed_deg_per_sec=speed_deg_per_sec
+        )
+        self._servo_vertical.move_by_angle(
+            delta_angle_vertical, speed_deg_per_sec=speed_deg_per_sec
+        )
