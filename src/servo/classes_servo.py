@@ -149,36 +149,34 @@ class DualServoController:
 
     def move_to(
         self,
-        target_angles: tuple[float, float],
+        pan_angle: float,
+        tilt_angle: float,
         speed_deg_per_sec: float = 30.0,
     ) -> None:
-        """Move both servos to specified target angles.
+        """Move both servos to specified angles.
 
-        target_angles should be a tuple: (horizontal_angle, vertical_angle)
+        pan_angle: target angle for horizontal servo (pan)
+        tilt_angle: target angle for vertical servo (tilt)
+        speed_deg_per_sec: speed of movement in degrees per second
         """
-        try:
-            target_angle_horizontal, target_angle_vertical = target_angles
-        except Exception:
-            raise TypeError(
-                "target_angles must be a tuple (horizontal_angle, vertical_angle)"
-            )
-
-        self._servo_horizontal.move_to(
-            target_angle_horizontal, speed_deg_per_sec=speed_deg_per_sec
-        )
-        self._servo_vertical.move_to(
-            target_angle_vertical, speed_deg_per_sec=speed_deg_per_sec
-        )
+        self._servo_horizontal.move_to(pan_angle, speed_deg_per_sec=speed_deg_per_sec)
+        self._servo_vertical.move_to(tilt_angle, speed_deg_per_sec=speed_deg_per_sec)
 
     def move_by_angles(
         self,
         pan_angle: float,
         tilt_angle: float,
+        speed_deg_per_sec: float = 30.0,
     ) -> None:
-        """Move both servos by specified angles from their current positions.
+        """Move both servos by specified angle deltas.
 
-        pan_angle: angle to move horizontal servo (pan)
-        tilt_angle: angle to move vertical servo (tilt)
+        pan_angle: angle delta for horizontal servo (pan)
+        tilt_angle: angle delta for vertical servo (tilt)
+        speed_deg_per_sec: speed of movement in degrees per second
         """
-        self._servo_horizontal.move_by_angle(pan_angle)
-        self._servo_vertical.move_by_angle(tilt_angle)
+        self._servo_horizontal.move_by_angle(
+            pan_angle, speed_deg_per_sec=speed_deg_per_sec
+        )
+        self._servo_vertical.move_by_angle(
+            tilt_angle, speed_deg_per_sec=speed_deg_per_sec
+        )
