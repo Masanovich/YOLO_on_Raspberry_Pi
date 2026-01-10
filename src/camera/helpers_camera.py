@@ -3,7 +3,7 @@ from typing import Any
 import cv2
 
 
-def convert_rgb_to_bgr(self, image: Any) -> Any:
+def convert_rgb_to_bgr(image: Any) -> Any:
     """Converts an RGB image to BGR format.
 
     Args:

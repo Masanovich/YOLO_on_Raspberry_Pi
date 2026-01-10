@@ -1,6 +1,8 @@
 # Imports
 from typing import Any
 
+import cv2
+from IPython.display import Image, clear_output, display
 from picamera2 import Picamera2
 from ultralytics import YOLO
 
@@ -35,43 +37,41 @@ class CameraManager:
         return self._picam2.capture_array()
 
 
-class YOLOManager:
-    """Class for handling YOLO object detection on images captured from the camera."""
+class YOLOCameraManager:
+    """Extends CameraManager to include YOLO object detection capabilities."""
 
-    def __init__(
-        self,
-        model_path: str = "yolo12n_ncnn_model",
-        imgz: int = 320,
-        device: str = "cpu",
-    ) -> None:
-        self._model: YOLO = YOLO(model_path)
-        self._imgz: int = imgz
-        self._device: str = device
+    def __init__(self, model_path: str = "yolo12n_ncnn_model", imgz: int = 320) -> None:
+        self._yolo_model: YOLO = YOLO(model_path)
+        self._camera_manager: CameraManager = CameraManager()
+        self._imgz = imgz
 
-    def detect_objects(self, image: Any, **kwargs) -> Any:
-        """Performs object detection on the provided image.
-
-        Args:
-            image: The input image for object detection.
+    def get_capture_and_detect_results(self):
+        """Captures an image and performs object detection.
 
         Returns:
-            The results of the object detection.
+            The annotated image with detection results.
         """
-        bgr_image: Any = convert_rgb_to_bgr(self, image)
-        self._results: Any = self._model.predict(
-            source=bgr_image,
-            imgsz=self._imgz,
-            device=self._device,
-            **kwargs,
-        )
+        image = self._camera_manager.capture_image()
+        image_bgr = convert_rgb_to_bgr(image)
 
-    def annotate_image(self) -> Any:
-        """Annotates the image with detection results.
+        results = self._yolo_model.predict(image_bgr, imgz=self._imgz)
+
+        return results
+
+    def display_results(self) -> Any:
+        """Displays the detection results on the captured image.
 
         Returns:
-            The annotated image.
+            The annotated image with detection results.
         """
-        annotated_image: Any = self._results[0].plot()
-        return annotated_image
-    
-    
+        results = self.get_capture_and_detect_results()
+
+        res = results[0] if isinstance(results, (list, tuple)) else results
+
+        annotated_image = res.plot()
+
+        # Display in Jupyter Notebook
+        ok, buf = cv2.imencode(".jpg", annotated_image)
+        if ok:
+            clear_output(wait=True)
+            display(Image(data=buf.tobytes()))
